@@ -1,1 +1,2 @@
-This is a pokemon link game with popular characters from Pokemon.
+Hey Guys:
+Here are some web games that i developed for entertainment purposes. Please feel free to play them. 
