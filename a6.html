@@ -1,0 +1,405 @@
+
+<!doctype html>
+<html>
+  <head>
+    <title>Macro Assignment 06</title>
+    <style>
+
+      body {
+        background-color: black;
+        color: white;
+        font-family: sans-serif;
+        font-size: 125%;
+        text-align: center;
+      }
+      .hidden {
+        display: none;
+      }
+
+      #token_container {
+          width: 400px;
+          height: 300px;
+          margin: auto;
+      }
+
+      .token {
+        width: 100px;
+        height: 100px;
+      }
+
+      .size{
+        width: 33.3%;
+        height: 200px;
+        position: absolute;
+      }
+
+      .balls:hover{
+        background-color: #550000;
+      }
+
+      .balls{
+        border: 2px solid black;
+      }
+
+      .ballsChosen{
+        border: 2px solid red;
+      }
+
+      #choice1{
+        top: 300px;
+      }
+
+      #choice2{
+        left: 33.3%;
+        top: 275px;
+      }
+
+      #choice3{
+        left: 66.6%;
+        top: 250px;
+      }
+
+      #list1{
+        left: 10%;
+        top: 300px;
+        width: 150px;
+        height: 200px;
+        position: absolute;
+        text-align: left;
+      }
+
+      #list2{
+        top: 300px;
+        left: 38.3%;
+        width: 150px;
+        height: 200px;
+        position: absolute;
+        text-align: left;
+      }
+
+      #list3{
+        top: 300px;
+        left: 66.6%;
+        width: 150px;
+        height: 200px;
+        position: absolute;
+        text-align: left;
+      }
+
+    </style>
+  </head>
+  <body>
+    <h1>Memory Matching Madness!</h1>
+
+    <audio id="wrong_sound">
+      <source src="assignment06_images/wrong.wav" type="audio/wav">
+    </audio>
+
+    <audio id="correct_sound">
+      <source src="assignment06_images/correct.wav" type="audio/wav">
+    </audio>
+
+    <div id="panel_start">
+      <p>Welcome to the game!</p>
+      <p>Choose one difficulty level to begin!</p>
+      <button id="button_start" class="hidden">Start!</button>
+      <div class='size' id="choice1">
+        3×4<br>
+        <img width='200px' src="assignment06_images/3*4.png" class='balls'>
+      </div>
+      <div class='size' id="choice2">
+        4×5<br>
+        <img width='250px' src="assignment06_images/4*5.png" class='balls'>
+      </div>
+      <div class='size' id="choice3">
+        5×6<br>
+        <img width='300px' src="assignment06_images/5*6.png" class='balls'>
+      </div>
+    </div>
+
+    <div id="panel_game" class="hidden">
+      <div id="timer">Time elapsed: 0 seconds</div>
+      <div id="token_container"></div>
+    </div>
+
+    <div id="panel_gameover" class="hidden">
+      <p>Your time: <span id='finishTime'>XX</span> seconds</p>
+      <p id='congrats' class="hidden">Congratulations! You made the new record!</p>
+      <button id="start_over">Play Again</button>
+      <p id='bestTime'></p>
+      <div id="list1">
+        3×4 Best Scores<br>
+          <p>1st: <span class = 'rank1'></span></p>
+          <p>2nd: <span class = 'rank1'></span></p>
+          <p>3rd: <span class = 'rank1'></span></p>
+      </div>
+      <div id="list2">
+        4×5 Best Scores<br>
+        <p>1st: <span class = 'rank2'></span></p>
+        <p>2nd: <span class = 'rank2'></span></p>
+        <p>3rd: <span class = 'rank2'></span></p>
+      </div>
+      <div id="list3">
+        5×6 Best Scores<br>
+        <p>1st: <span class = 'rank3'></span></p>
+        <p>2nd: <span class = 'rank3'></span></p>
+        <p>3rd: <span class = 'rank3'></span></p>
+      </div>
+    </div>
+
+    <script>
+      // DOM references
+      let panel_start = document.getElementById('panel_start');
+      let button_start = document.getElementById('button_start');
+      let panel_game = document.getElementById('panel_game');
+      let timer = document.getElementById('timer');
+      let token_container = document.getElementById('token_container');
+      let panel_gameover = document.getElementById('panel_gameover');
+      let wrong_sound = document.getElementById('wrong_sound');
+      let correct_sound = document.getElementById('correct_sound');
+      let finishTime = document.getElementById('finishTime');
+      let bestTime = document.getElementById('bestTime');
+      let congrats = document.getElementById('congrats');
+      let start_over = document.getElementById('start_over');
+      let size_choice = document.querySelectorAll('.size');
+      let rank1 = document.querySelectorAll('.rank1');
+      let rank2 = document.querySelectorAll('.rank2');
+      let rank3 = document.querySelectorAll('.rank3');
+      let num_balls;
+
+      for (let i = 0; i < size_choice.length; i++){
+        size_choice[i].addEventListener('click',function(event){
+          num_balls = (i+3)*(i+4);
+          button_start.classList.remove("hidden");
+          for (let j = 0; j < size_choice.length; j++){
+            size_choice[j].children[1].classList.remove('ballsChosen');
+          }
+          event.currentTarget.children[1].classList.add('ballsChosen');
+        });
+      }
+
+      let timerInterval;
+      let currentTime = 0;
+      let countCorrect;
+
+      // two variables to keep track of the tokens as we click them
+      let token1 = false;
+      let token2 = false;
+
+      // user wants to start the game
+      button_start.addEventListener('click', function(event) {
+
+        countCorrect = num_balls/2-1;
+        if (num_balls == 12){
+          token_container.style['height'] = '300px';
+          token_container.style['width'] = '400px';
+        }
+        else if (num_balls == 20){
+          token_container.style['height'] = '400px';
+          token_container.style['width'] = '500px';
+        }
+        else{
+          token_container.style['height'] = '500px';
+          token_container.style['width'] = '600px';
+        }
+
+
+        // hide the start panel
+        panel_start.classList.add('hidden');
+
+        // show the game panel_game
+        panel_game.classList.remove('hidden');
+
+        // start up the timer
+        timerInterval = setInterval(function() {
+            currentTime += 1;
+            timer.innerHTML = 'Time elapsed: ' + currentTime + ' seconds';
+        }, 1000);
+
+        let assets = ['snorlax.png', 'electrabuzz.png', 'chansey.png', 'oddish.png',
+                      'pikachu.png', 'paras.png', 'arcanine.png', 'ponita.png',
+                      'venonat.png', 'eggsecute.png', 'machop.png', 'pidgey.png',
+                      'psyduck.png', 'tauros.png', 'vulpix.png', 'gloom.png',
+                      'krabby.png', 'butterfree.png', 'bulbasaur.png', 'clefairy.png',
+                      'koffing.png', 'goldeen.png', 'magikarp.png', 'beedrill.png',
+                      'lapras.png', 'meowth.png', 'ekans.png', 'jigglypuff.png',
+                      'horsea.png', 'polywog.png', 'sandshrew.png', 'rattata.png',
+                      'gengar.png', 'eevee.png', 'bellsprout.png', 'squirtle.png',
+                      'seel.png', 'caterpie.png'];
+
+        let picked = [];
+
+        while (picked.length < num_balls) {
+
+          let i = parseInt( Math.random() * assets.length );
+          picked.push( assets[i] );
+          picked.push( assets[i] );
+
+          assets.splice(i, 1);
+
+        }
+
+        // you want to randomize the images here
+        for (let i=0; i<picked.length; i++) {
+          let randomIndex = parseInt(Math.random() * i);
+          [picked[i], picked[randomIndex]] = [picked[randomIndex], picked[i]];
+        }
+
+        // create our pokeballs
+        for (let i = 0; i < picked.length; i++) {
+
+          let tempImage = document.createElement('img');
+          tempImage.src = 'assignment06_images/pokeball.png';
+          tempImage.classList.add('token');
+          tempImage.dataset.secret = 'assignment06_images/'+picked[i];
+
+          token_container.appendChild( tempImage );
+
+          // when you click on the image, reveal and check
+          tempImage.onclick = function(event) {
+            if (!tempImage.dataset.flipped){
+              if (token1 == false && token2==false) {
+                // this is the first pick!
+                //flip image
+                event.currentTarget['transform'] = 'rotateX(180deg)';
+                event.currentTarget.src = event.currentTarget.dataset.secret;
+                token1 = event.currentTarget;
+              }
+
+              // must be the second pick!
+              else if (token2 == false){
+                if (event.currentTarget != token1){
+                  event.currentTarget.src = event.currentTarget.dataset.secret;
+                  token2 = event.currentTarget;
+
+                  // are they the same?
+                  if (token1.dataset.secret == token2.dataset.secret) {
+                    // match!
+                    correct_sound.play();
+                    token1.dataset.flipped = 'flipped';
+                    token2.dataset.flipped = 'flipped';
+                    token1 = false;
+                    token2 = false;
+                    if (countCorrect > 0){
+                      countCorrect--;
+                      console.log(countCorrect);
+                    }
+                    else {
+                      //game ends
+                      clearInterval(timerInterval);
+                      finishTime.innerText = currentTime;
+
+                      //change scores
+                      let best_time;
+                      let scoreList12 = [];
+                      let scoreList20 = [];
+                      let scoreList30 = [];
+
+                      if (num_balls == 12){
+                        //get array
+                        if (window.localStorage.getItem('12bestTimes')){
+                          scoreList12 = window.localStorage.getItem('12bestTimes').split(",");
+                        }
+                        //make into integer
+                        for (let i = 0; i<scoreList12.length; i++){
+                          scoreList12[i]=parseInt(scoreList12[i]);
+                        }
+
+                        scoreList12.push( currentTime );
+                        scoreList12.sort();
+                        best_time = scoreList12[0];
+                        window.localStorage.setItem('12bestTimes',scoreList12.slice(0,3).toString());
+                      }
+                      if (num_balls == 20){
+                        if (window.localStorage.getItem('20bestTimes')){
+                          scoreList20 = window.localStorage.getItem('20bestTimes').split(",");
+                        }
+                        for (let i = 0; i<scoreList20.length; i++){
+                          scoreList20[i]=parseInt(scoreList20[i]);
+                        }
+                        scoreList20.push( currentTime );
+                        scoreList20.sort();
+                        best_time = scoreList20[0];
+                        window.localStorage.setItem('20bestTimes',scoreList20.slice(0,3).toString());
+                      }
+                      if (num_balls == 30){
+                        if (window.localStorage.getItem('30bestTimes')){
+                          scoreList30 = window.localStorage.getItem('30bestTimes').split(",");
+                        }
+                        //make into inter
+                        for (let i = 0; i<scoreList30.length; i++){
+                          scoreList30[i]=parseInt(scoreList30[i]);
+                        }
+                        scoreList30.push( currentTime );
+                        scoreList30.sort();
+                        best_time = scoreList30[0];
+                        window.localStorage.setItem('30bestTimes',scoreList30.slice(0,3).toString());
+                      }
+
+
+                      //fill the charts
+                      for (let i=0; i<3; i++){
+                        if(scoreList12[i]){
+                          if (rank1[i]){
+                            rank1[i].innerText = scoreList12[i] + ' seconds';
+                          }
+                        }
+                        if(scoreList20[i]){
+                          if (rank2[i]){
+                            rank2[i].innerText = scoreList20[i] + ' seconds';
+                          }
+
+                        }
+                        if(scoreList30[i]){
+                          if (rank3[i]){
+                            rank3[i].innerText = scoreList30[i] + ' seconds';
+                          }
+                        }
+                      }
+
+
+                      if (best_time == null || parseInt(best_time) > currentTime){
+                        congrats.classList.remove('hidden');
+                      }
+                      bestTime.innerText = `Best time: ${best_time} seconds`;
+                      setTimeout(function() {
+                        panel_game.classList.add('hidden');
+                        panel_gameover.classList.remove('hidden');
+                      }, 1000);
+                    }
+                  }
+                  else {
+                    wrong_sound.play();
+
+                    setTimeout(function() {
+                      // not a match :(
+                      token1.src = 'assignment06_images/pokeball.png';
+                      token2.src = 'assignment06_images/pokeball.png';
+                      token1 = false;
+                      token2 = false;
+                    }, 1000);
+                  }
+                }
+
+
+              }
+            }
+          }
+
+
+
+        }
+
+      });
+
+      start_over.addEventListener('click', function(event){
+
+        location.reload();
+      });
+
+
+    </script>
+
+
+  </body>
+</html>
