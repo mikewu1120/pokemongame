@@ -5,9 +5,9 @@ This repository contains a collection of web-based games built using **HTML**, *
 
 ## Games Included
 1. **Hide-and-Seek**: A fun game where users try to find hidden objects on the screen.
-2. **Link Games**: Connect matching items or objects to clear the board.
+2. [**Link Games**](https://mikewu1120.github.io/webgames/a6.html): Connect matching items or objects to clear the board.
 3. **Find-the-Difference**: Spot the differences between two similar images.
-4. **Seasonal to-do list**: A personalized to-do list dashboard that could manage your daily life. 
+4. [**Seasonal to-do list**](https://mikewu1120.github.io/webgames/a5.html): A personalized to-do list dashboard that could manage your daily life. 
 
 ## Technologies Used
 - HTML
