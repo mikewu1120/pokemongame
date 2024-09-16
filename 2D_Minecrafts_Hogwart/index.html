@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Design Your own Hogwarts!</title>
+    <style type="text/css">
+      #left {
+        width: 320px;
+        height: 320px;
+        border:1px solid black;
+        
+        
+
+        background-color: yellow;
+
+        float: left;
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+       
+      }
+
+      #right {
+        display: grid;
+        width: 680px;
+        height: 1550px;
+        border: 1px solid black;
+        float: left;
+        margin-left: 20px;
+        grid-template-columns: repeat(20, 1fr);
+        
+      }
+
+    .text {
+        margin-left: 340px;
+        float: top;
+        border-bottom: 1px solid black;
+        /* background-color: aqua; */
+        height: 26px;
+    }
+    #left div {
+        width: 32px;
+        height: 32px;
+        float: left;
+        background-color: yellow;
+        margin: 0;
+        padding: 0;
+      }
+
+
+    #left div:hover{
+      background-color: #999;
+      border:2px solid red;
+      cursor: pointer;
+
+    }
+
+    </style>
+  </head>
+
+  <body>
+    <h1>Design Your Own Hogwarts!</h1>
+    
+
+    <div id="left">  </div>
+    <p class="text"> 
+        Click on a tile to select it. Then click on the map to the left to place the tile.
+    </p>
+    <div id="right">  </div>
+
+    <!-- load in the image array file - this makes available a new array of all image filenames that you can use for this project -->
+    <!-- Assets courtesy of Crawl Stone Soup: https://github.com/crawl/tiles -->
+    <script src="image_array.js"></script>
+
+    <script>
+        let left = document.getElementById("left");
+        let right = document.getElementById("right");
+        let choose_img;
+
+        //  1. handle left box 
+        for (let i=0; i<100; i++) {
+          let d = document.createElement("div");
+          d.style.width = "32px";
+          d.style.height = "32px";
+           //d.style.background = "pink";
+          d.style.background = "white";
+          d.className = "d" + i;
+          left.appendChild(d);
+
+          //d.addEventListener('mousemove', function (e) {
+            // d.style.backgroundColor = "pink";
+           //}, false);
+
+          d.addEventListener('click', function (e) {
+            if (typeof choose_img !== 'undefined') {
+              d.style.backgroundImage = "url(" + choose_img.src + ")";
+            } else {
+                d.style.background = "white";
+            }
+          });
+        }
+
+        
+        //  2. handle rgiht box
+
+        for (let i=0; i<array_library.length; i++) {
+          // console.log(array_library[i]);
+          let m = document.createElement("img");
+          m.style.width = "32px";
+          m.style.height = "32px";
+          m.style.border = "1px solid black;";
+          m.src = array_library[i];
+
+          m.className = "myimg";
+          // m.setAttribute("id", "my_img");
+          right.appendChild(m);
+        }
+
+        
+        function reset_all() {
+          let tt = document.getElementsByClassName("myimg");
+          for (let t of tt) {
+            t.attributeStyleMap.delete('border')
+            t.style.width = "32px";
+            t.style.height = "32px";
+          }
+        };
+
+        function make_change(ele) {
+            reset_all();
+            ele.style.border  = "3px solid red";
+            ele.style.width = "26px";
+            ele.style.height = "26px";
+
+            choose_img = ele;
+            
+            if (typeof choose_img.src === ele.src) {
+                console.log("same!");
+            } 
+        }
+
+        let gg = document.getElementsByClassName("myimg");
+        for (let m of gg) {
+          m.addEventListener('click', function (e) {
+            make_change(m);
+          }, false);
+        }
+         
+
+    </script>
+
+
+  </body>
+</html>
