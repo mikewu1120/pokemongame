@@ -1,0 +1,268 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Gotta Catch 'em All!</title>
+    <style>
+        #forest_container {
+            width: 800px;
+            height: 600px;
+            position: relative;
+            float: left;
+        }
+        #background {
+            position: absolute;
+            z-index: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #g1 {
+            position: absolute;
+            z-index: 1;
+            left: 0px;
+            bottom: 0px;
+        }
+        #g2 {
+            position: absolute;
+            z-index: 1;
+            left: 270px;
+            bottom: 0px;
+        }
+        #g3 {
+            position: absolute;
+            z-index: 1;
+            right: 0px;
+            bottom: 0px;
+        }
+        .grass:hover {
+            background-color: rgba(255,255,0,0.5);
+        }
+        #end{
+            text-align: center;
+            color: red;
+            font-size: 1.5em;
+        }
+        #progress{
+            font-size: 1.5em;
+        }
+        td{
+            width: 300px;
+        }
+        .bar{
+            width: 0px;
+        }
+        .big_container{
+            position: absolute;
+            top: 620px;
+        }
+        .history_bar{
+            width: 400px;
+        }
+    </style>
+  </head>
+  <body>
+    <div>
+        <div id="forest_container">
+            <img id="background" src="images/environment_forestbackground.png">
+            <img class="grass" id="g1" src="images/grass.png">
+            <img class="grass" id="g2" src="images/grass.png">
+            <img class="grass" id="g3" src="images/grass.png">
+        </div>
+
+        <h1>Gotta Catch 'em All!</h1>
+
+        <p>Your goal in this game is to earn as many Pokeballs as possible while catching a variety of Pokemon along the way.</p>
+
+        <p>To play simply click on one of the three grass clumps in the forest. Behind one of those grass clumps is a Pokemon that can be caught. Behind another grass clump are two free Pokeballs that you can use to try again, and behind the last grass clump is nothing.</p>
+
+        <p>Note that each time you pick a grass clump you will be using one of your Pokeballs, and when you run out the game will be over!</p>
+
+        <div id="progress">Your progress so far ...</div>
+        <div>Pokeballs left: <span id="pokeballs_left">5</span></div>
+
+        <div>Pokemon caught: <span id="pokemon_caught">0</span></div>
+
+        <button style="display: none;" id="play_again_button">Play Again</button>
+
+        <div id="end" style="display: none;">GAME OVER!</div>
+
+        <div>
+            <table>
+                <tr>
+                    <th>Pokemon</th>
+                    <th>Count</th>
+                    <th>Histogram</th>
+                </tr>
+                <tr id="Pikachu">
+                    <td>Pikachu</td>
+                    <td>0</td>
+                    <td><div class='bar' style="background-color: yellow; display: inline-block;">&nbsp;</div></td>
+                </tr>
+                <tr id="Bulbasaur">
+                    <td>Bulbasaur</td>
+                    <td>0</td>
+                    <td><div class='bar' style="background-color: green; display: inline-block;">&nbsp;</div></td>
+                </tr>
+                <tr id="Charmander">
+                    <td>Charmander</td>
+                    <td>0</td>
+                    <td><div class='bar' style="background-color: red; display: inline-block;">&nbsp;</div></td>
+                </tr>
+                <tr id="Eevee">
+                    <td>Eevee</td>
+                    <td>0</td>
+                    <td><div class='bar' style="background-color: darkgoldenrod; display: inline-block;">&nbsp;</div></td>
+                </tr>
+                <tr id="Squirtle">
+                    <td>Squirtle</td>
+                    <td>0</td>
+                    <td><div class='bar' style="background-color: aqua; display: inline-block;">&nbsp;</div></td>
+                </tr>
+            </table>
+        </div>
+
+        <button id="clear_hist">Clear History</button>
+        <button style="display: none;" id="new_game">New Game!</button>
+    </div>
+    <div class="big_container">
+        <table id="history">
+            <tr class="history_bar" id="header">
+                <th>History</td>
+            </tr>
+        </table>
+    </div>
+
+
+    <script>
+        // grab some references to the elements that will be updated / changed / adjusted
+        const g1 = document.getElementById('g1');
+        const g2 = document.getElementById('g2');
+        const g3 = document.getElementById('g3');
+        const progress = document.getElementById('progress');
+        const pokeballs_left = document.getElementById('pokeballs_left');
+        const pokemon_caught = document.getElementById('pokemon_caught');
+        const play_again_button = document.getElementById('play_again_button');
+        const clear_hist = document.getElementById('clear_hist');
+        const new_game = document.getElementById('new_game');
+        const history = document.getElementById('history');
+        const end = document.getElementById('end');
+        let pokeballs = 5;
+        let pokemon = 0;
+
+        // possible pokemon
+        const pokemons = ['images/pikachu.png', 'images/bulbasaur.png', 'images/charmander.png', 'images/eevee.png', 'images/squirtle.png'];
+        const names = ['Pikachu', 'Bulbasaur', 'Charmander', 'Eevee', 'Squirtle'];
+        const nums =  new Array(5).fill(0);
+        const widths =  new Array(5).fill(0);
+        const each_pokemon =  {};
+        for(let i=0; i<names.length;i++){
+            each_pokemon[names[i]]=document.getElementById(names[i]);
+        }
+
+        let abc = each_pokemon['Pikachu'].children[2].firstElementChild;
+
+        function insertAfter(newNode, existingNode) {
+            existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+        }
+        
+        
+        function play_action(event){
+            if(play_again_button.style.display === 'none' && pokeballs>0){
+                let g = event.currentTarget;
+                // figure out what's behind this patch of grass
+                let chance = parseInt( Math.random() * 3 );
+
+                // chance == 0, nothing!
+                if (chance == 0) {
+                    // nothing!
+                    g.src = '';
+                    progress.innerHTML='You did not get anything!';
+                    pokeballs -=1;
+                    // create a new row in history
+                    let tempRow = document.createElement('tr')
+                    let tempData = document.createElement('td');
+                    tempData.innerHTML=progress.innerHTML;
+                    tempRow.appendChild(tempData);
+                    tempRow.classList.add('history_bar');
+                    insertAfter(tempRow,history.firstElementChild);
+                }   
+                else if (chance == 1) {
+                    let theOne = parseInt(Math.random()*pokemons.length);
+                    let theName = names[theOne];
+                    g.src =pokemons[theOne];
+                    progress.innerHTML=`You have caught a ${theName}!`;
+                    pokemon += 1;
+                    pokeballs -=1;
+                    nums[theOne] +=1;
+                    each_pokemon[theName].children[1].innerHTML=parseInt(each_pokemon[theName].children[1].innerHTML)+1;
+                    // each_pokemon[theName].children[2].firstElementChild.style.width=parseInt(each_pokemon[theName].children[2].firstElementChild.style.width)+20;
+                    widths[theOne]+=30;
+                    each_pokemon[theName].children[2].firstElementChild.style.width=`${widths[theOne]}px`;
+                    // create a new row in history
+                    let tempRow = document.createElement('tr')
+                    let tempData = document.createElement('td');
+                    tempData.innerHTML=progress.innerHTML;
+                    tempRow.appendChild(tempData);
+                    tempRow.classList.add('history_bar');
+                    insertAfter(tempRow,history.firstElementChild);
+                }
+                else {
+                    progress.innerHTML='You found two pokeballs!';
+                    g.src = 'images/pokeballs.png';
+                    pokeballs += 2;
+                    // create a new row in history
+                    let tempRow = document.createElement('tr')
+                    let tempData = document.createElement('td');
+                    tempData.innerHTML=progress.innerHTML;
+                    tempRow.appendChild(tempData);
+                    tempRow.classList.add('history_bar');
+                    insertAfter(tempRow,history.firstElementChild);
+                }
+
+                pokeballs_left.innerHTML = pokeballs;
+                pokemon_caught.innerHTML = pokemon;
+
+                // show the button to play again
+                play_again_button.style.display = 'block';
+            }
+
+            if(pokeballs==0){
+                end.style.display='block';
+                new_game.style.display="block";
+            }
+        }
+
+        // make the play_again_button listen for clicks
+        play_again_button.onclick = function() {
+            g1.src = 'images/grass.png';
+            g2.src = 'images/grass.png';
+            g3.src = 'images/grass.png';
+            play_again_button.style.display = 'none';
+        }
+        
+     
+        g1.onclick = play_action;
+        g2.onclick = play_action;
+        g3.onclick = play_action;
+
+        new_game.onclick= function(event){
+            document.location.reload();
+        }
+
+        clear_hist.onclick = function(event){
+            while(history.children.length>=2){
+                history.lastElementChild.remove();
+            }
+        }
+    </script>
+
+
+
+
+
+
+
+
+
+
+  </body>
+</html>
