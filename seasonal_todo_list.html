@@ -278,7 +278,6 @@
 
       cancel.onclick = function(event) {
         input_panel.classList.add('hidden');
-        //clear all inputs
         title.value = '';
         category.value = 'spring';
         description.value = '';
@@ -286,7 +285,6 @@
 
       edit_cancel.onclick = function(event) {
         edit_panel.classList.add('hidden');
-        //clear all inputs
         edit_title.value = '';
         edit_category.value = 'spring';
         edit_description.value = '';
@@ -299,10 +297,8 @@
 
       edit_save.onclick = function(event) {
         if (edit_description.value && edit_title.value && edit_category.value) {
-          // yay!
           edit_error.classList.add('hidden');
 
-          // build a post it note
           removeSeasons(currentNote);
           currentNote.classList.add( edit_category.value );
           currentNote.dataset.category = edit_category.value;
@@ -311,7 +307,6 @@
           let dateE = new Date();
           currentNote.dataset.edited = `${dateE.getMonth()+1}/${dateE.getDate()}/${dateE.getFullYear()} ${dateE.toTimeString().substr(0,5)}`;
 
-          //build the delete sign
           let deleteSign = document.createElement('img');
           deleteSign.classList.add('hidden');
           deleteSign.classList.add('delete');
@@ -323,7 +318,6 @@
             event.stopPropagation();
           });
 
-          //build the switch buttons
           let button_left = document.createElement('img');
           let button_right = document.createElement('img');
           button_left.classList.add('switch_left');
@@ -350,7 +344,6 @@
             event.stopPropagation();
           });
 
-          //build the delete sign
           let editSign = document.createElement('img');
           editSign.classList.add('hidden');
           editSign.classList.add('edit');
@@ -366,7 +359,6 @@
             event.stopPropagation();
           });
 
-          // have each of our little notes listen for mouse events
           currentNote.addEventListener('click', function(event) {
             chosen.classList.remove('hidden');
             chosen.classList.add( event.currentTarget.dataset.category );
@@ -396,13 +388,10 @@
             event.currentTarget.children[3].classList.add('hidden');
           });
 
-          // add to the board
           //board.appendChild(currentNote);
 
-          // hide the input panel
           edit_panel.classList.add("hidden");
 
-          //make sure filter is correct
           if (filter.value != 'all'){
             let next_note = board.firstElementChild;
             while (next_note != null){
@@ -416,26 +405,21 @@
             }
           }
 
-          //clear all inputs
           edit_title.value = '';
           edit_category.value = 'spring';
           edit_description.value = '';
         }
         else {
-          // sad :(
           edit_error.classList.remove('hidden');
         }
       }
 
       save.onclick = function(event) {
-        //reset the filter
         filter.value = 'all';
 
         if (description.value && title.value && category.value) {
-          // yay!
           error.classList.add('hidden');
 
-          // build a post it note
           let tempDiv = document.createElement('div');
           tempDiv.classList.add('item');
           tempDiv.classList.add( category.value );
@@ -446,7 +430,6 @@
           tempDiv.dataset.created = `${dateC.getMonth()+1}/${dateC.getDate()}/${dateC.getFullYear()} ${dateC.toTimeString().substr(0,5)}`;
           tempDiv.dataset.edited = `${dateC.getMonth()+1}/${dateC.getDate()}/${dateC.getFullYear()} ${dateC.toTimeString().substr(0,5)}`;
 
-          //build the delete sign
           let deleteSign = document.createElement('img');
           deleteSign.classList.add('hidden');
           deleteSign.classList.add('delete');
@@ -458,7 +441,6 @@
             event.stopPropagation();
           });
 
-          //build the switch buttons
           let button_left = document.createElement('img');
           let button_right = document.createElement('img');
           button_left.classList.add('switch_left');
@@ -485,7 +467,6 @@
             event.stopPropagation();
           });
 
-          //build the delete sign
           let editSign = document.createElement('img');
           editSign.classList.add('hidden');
           editSign.classList.add('edit');
@@ -501,7 +482,6 @@
             event.stopPropagation();
           });
 
-          // have each of our little notes listen for mouse events
           tempDiv.addEventListener('click', function(event) {
             chosen.classList.remove('hidden');
             chosen.classList.add( event.currentTarget.dataset.category );
@@ -531,24 +511,19 @@
             event.currentTarget.children[3].classList.add('hidden');
           });
 
-          // add to the board
           board.appendChild(tempDiv);
 
-          // hide the input panel
           input_panel.classList.add("hidden");
 
-          //clear all inputs
           title.value = '';
           category.value = 'spring';
           description.value = '';
 
         }
         else {
-          // sad :(
           error.classList.remove('hidden');
         }
 
-        //filter
         filter_container.addEventListener('change', function(event){
           let next_note = board.firstElementChild;
           if (filter.value == 'all'){

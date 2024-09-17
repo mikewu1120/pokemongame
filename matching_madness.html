@@ -148,7 +148,6 @@
     </div>
 
     <script>
-      // DOM references
       let panel_start = document.getElementById('panel_start');
       let button_start = document.getElementById('button_start');
       let panel_game = document.getElementById('panel_game');
@@ -182,11 +181,9 @@
       let currentTime = 0;
       let countCorrect;
 
-      // two variables to keep track of the tokens as we click them
       let token1 = false;
       let token2 = false;
 
-      // user wants to start the game
       button_start.addEventListener('click', function(event) {
 
         countCorrect = num_balls/2-1;
@@ -204,13 +201,10 @@
         }
 
 
-        // hide the start panel
         panel_start.classList.add('hidden');
 
-        // show the game panel_game
         panel_game.classList.remove('hidden');
 
-        // start up the timer
         timerInterval = setInterval(function() {
             currentTime += 1;
             timer.innerHTML = 'Time elapsed: ' + currentTime + ' seconds';
@@ -239,13 +233,11 @@
 
         }
 
-        // you want to randomize the images here
         for (let i=0; i<picked.length; i++) {
           let randomIndex = parseInt(Math.random() * i);
           [picked[i], picked[randomIndex]] = [picked[randomIndex], picked[i]];
         }
 
-        // create our pokeballs
         for (let i = 0; i < picked.length; i++) {
 
           let tempImage = document.createElement('img');
@@ -255,26 +247,20 @@
 
           token_container.appendChild( tempImage );
 
-          // when you click on the image, reveal and check
           tempImage.onclick = function(event) {
             if (!tempImage.dataset.flipped){
               if (token1 == false && token2==false) {
-                // this is the first pick!
-                //flip image
                 event.currentTarget['transform'] = 'rotateX(180deg)';
                 event.currentTarget.src = event.currentTarget.dataset.secret;
                 token1 = event.currentTarget;
               }
 
-              // must be the second pick!
               else if (token2 == false){
                 if (event.currentTarget != token1){
                   event.currentTarget.src = event.currentTarget.dataset.secret;
                   token2 = event.currentTarget;
 
-                  // are they the same?
                   if (token1.dataset.secret == token2.dataset.secret) {
-                    // match!
                     correct_sound.play();
                     token1.dataset.flipped = 'flipped';
                     token2.dataset.flipped = 'flipped';
@@ -285,22 +271,18 @@
                       console.log(countCorrect);
                     }
                     else {
-                      //game ends
                       clearInterval(timerInterval);
                       finishTime.innerText = currentTime;
 
-                      //change scores
                       let best_time;
                       let scoreList12 = [];
                       let scoreList20 = [];
                       let scoreList30 = [];
 
                       if (num_balls == 12){
-                        //get array
                         if (window.localStorage.getItem('12bestTimes')){
                           scoreList12 = window.localStorage.getItem('12bestTimes').split(",");
                         }
-                        //make into integer
                         for (let i = 0; i<scoreList12.length; i++){
                           scoreList12[i]=parseInt(scoreList12[i]);
                         }
@@ -326,7 +308,6 @@
                         if (window.localStorage.getItem('30bestTimes')){
                           scoreList30 = window.localStorage.getItem('30bestTimes').split(",");
                         }
-                        //make into inter
                         for (let i = 0; i<scoreList30.length; i++){
                           scoreList30[i]=parseInt(scoreList30[i]);
                         }
@@ -337,7 +318,6 @@
                       }
 
 
-                      //fill the charts
                       for (let i=0; i<3; i++){
                         if(scoreList12[i]){
                           if (rank1[i]){
@@ -372,7 +352,6 @@
                     wrong_sound.play();
 
                     setTimeout(function() {
-                      // not a match :(
                       token1.src = 'assignment06_images/pokeball.png';
                       token2.src = 'assignment06_images/pokeball.png';
                       token1 = false;

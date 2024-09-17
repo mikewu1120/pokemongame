@@ -133,7 +133,6 @@
 
 
     <script>
-        // grab some references to the elements that will be updated / changed / adjusted
         const g1 = document.getElementById('g1');
         const g2 = document.getElementById('g2');
         const g3 = document.getElementById('g3');
@@ -148,7 +147,6 @@
         let pokeballs = 5;
         let pokemon = 0;
 
-        // possible pokemon
         const pokemons = ['images/pikachu.png', 'images/bulbasaur.png', 'images/charmander.png', 'images/eevee.png', 'images/squirtle.png'];
         const names = ['Pikachu', 'Bulbasaur', 'Charmander', 'Eevee', 'Squirtle'];
         const nums =  new Array(5).fill(0);
@@ -168,16 +166,12 @@
         function play_action(event){
             if(play_again_button.style.display === 'none' && pokeballs>0){
                 let g = event.currentTarget;
-                // figure out what's behind this patch of grass
                 let chance = parseInt( Math.random() * 3 );
 
-                // chance == 0, nothing!
                 if (chance == 0) {
-                    // nothing!
                     g.src = '';
                     progress.innerHTML='You did not get anything!';
                     pokeballs -=1;
-                    // create a new row in history
                     let tempRow = document.createElement('tr')
                     let tempData = document.createElement('td');
                     tempData.innerHTML=progress.innerHTML;
@@ -194,10 +188,8 @@
                     pokeballs -=1;
                     nums[theOne] +=1;
                     each_pokemon[theName].children[1].innerHTML=parseInt(each_pokemon[theName].children[1].innerHTML)+1;
-                    // each_pokemon[theName].children[2].firstElementChild.style.width=parseInt(each_pokemon[theName].children[2].firstElementChild.style.width)+20;
                     widths[theOne]+=30;
                     each_pokemon[theName].children[2].firstElementChild.style.width=`${widths[theOne]}px`;
-                    // create a new row in history
                     let tempRow = document.createElement('tr')
                     let tempData = document.createElement('td');
                     tempData.innerHTML=progress.innerHTML;
@@ -209,7 +201,6 @@
                     progress.innerHTML='You found two pokeballs!';
                     g.src = 'images/pokeballs.png';
                     pokeballs += 2;
-                    // create a new row in history
                     let tempRow = document.createElement('tr')
                     let tempData = document.createElement('td');
                     tempData.innerHTML=progress.innerHTML;
@@ -221,7 +212,6 @@
                 pokeballs_left.innerHTML = pokeballs;
                 pokemon_caught.innerHTML = pokemon;
 
-                // show the button to play again
                 play_again_button.style.display = 'block';
             }
 
@@ -231,7 +221,6 @@
             }
         }
 
-        // make the play_again_button listen for clicks
         play_again_button.onclick = function() {
             g1.src = 'images/grass.png';
             g2.src = 'images/grass.png';
